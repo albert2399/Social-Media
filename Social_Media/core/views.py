@@ -1,9 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import Profile, Post, LikePost, FollowersCount
+from .models import Profile, Post, LikePost, FollowersCount, Comment
 from itertools import chain
 import random
 
@@ -57,8 +57,8 @@ def index(request):
 
     suggestions_username_profile_list = list(chain(*username_profile_list))
 
-    posts = Post.objects.all()
-    return render(request, 'index (1).html', {'user_profile':user_profile, 'feed':feed_list, 'suggestions_username_profile_list':suggestions_username_profile_list[:4]})
+    comments = Comment.objects.all()
+    return render(request, 'index (1).html', {'user_profile':user_profile, 'comments':comments , 'feed':feed_list, 'suggestions_username_profile_list':suggestions_username_profile_list[:4]})
 
 @login_required(login_url='signin')
 def upload(request):
@@ -76,21 +76,14 @@ def upload(request):
         return redirect('/')
 
 @login_required(login_url='signin')
-def delete(request):
-        try:
-            post = Post.objects.get(id=post.id)
-        except Post.DoesNotExist:
-            messages.error(request, 'El post no existe.')
-            return redirect('/')
+def delete(request, post_id):
+    post = get_object_or_404(Post, id=post_id, user=request.user.username)
 
-   
-        if post.user == request.user.username:
-            post.delete()
-            messages.success(request, 'El post se eliminó exitosamente.')
-        else:
-            messages.error(request, 'No tienes permisos para eliminar este post.')
-
+    if request.method == 'POST':
+        post.delete()
         return redirect('/')
+    
+    return redirect('/')
 
 @login_required(login_url='signin')
 def search(request):
@@ -107,6 +100,43 @@ def search(request):
             profile = Profile.objects.get(user=user)
             username_profile_list.append(profile)
     return render(request, 'search.html', {'user_profile':user_profile, 'username_profile_list':username_profile_list})
+
+@login_required(login_url='signin')
+def followers(request, pk):
+
+    user_object = User.objects.get(username=request.user.username)
+    user_profile = Profile.objects.get(user=user_object)
+
+    follower_list = FollowersCount.objects.filter(user=pk).values_list('follower', flat=True)
+    user_following = pk
+
+    profile_followers = []
+
+    for follower in follower_list:
+        follower_user = User.objects.get(username=follower)
+        follower_profile = Profile.objects.get(user = follower_user)
+        profile_followers.append(follower_profile)
+    
+
+    return render(request, 'followers.html', {'profile_followers':profile_followers, 'user_profile': user_profile, 'user_following':user_following})
+
+@login_required(login_url='signin')
+def following(request, pk):
+    user_object = User.objects.get(username=request.user.username)
+    user_profile = Profile.objects.get(user=user_object)
+
+    follower_list = FollowersCount.objects.filter(follower=pk).values_list('user', flat=True)
+    user_following = pk
+
+    profile_followers = []
+
+    for follower in follower_list:
+        follower_user = User.objects.get(username=follower)
+        follower_profile = Profile.objects.get(user = follower_user)
+        profile_followers.append(follower_profile)
+    
+
+    return render(request, 'following.html', {'profile_followers':profile_followers, 'user_profile': user_profile, 'user_following':user_following})
 
 @login_required(login_url='signin')
 def like_post(request):
@@ -217,6 +247,28 @@ def settings(request):
 
     return render(request, 'setting.html', {'user_profile':user_profile})
 
+@login_required(login_url='signin')
+def advanced(request):
+    user_profile = Profile.objects.get(user=request.user)
+
+    if request.method == 'POST':
+
+        if request.FILES.get('image') == None:
+            image = user_profile.background
+            user_profile.background = image
+
+            user_profile.save()
+        if request.FILES.get('image') != None:
+            image = request.FILES.get('image')
+
+            user_profile.background = image
+
+            user_profile.save()
+
+        return redirect('advanced-settings')
+    
+    return render(request, 'advanced_settings.html', {'user_profile':user_profile})
+
 def signup(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -271,3 +323,16 @@ def signin(request):
 def logout(request):
     auth.logout(request)
     return redirect('signin')
+
+@login_required(login_url='signin')
+def add_comment(request, post_id):
+    if request.method == 'POST':
+
+        comment_text = request.POST['comment']
+        user = request.user.username
+        comment = Comment.objects.create(content=comment_text, post_id=post_id, user=user)
+        comment.save()
+        return redirect('/')
+    
+
+    return render(request, 'index (1).html')

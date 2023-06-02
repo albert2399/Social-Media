@@ -26,7 +26,7 @@
 	
 	<section>
 			<div class="feature-photo">
-				<figure><img src="{% static 'images/resources/timeline-1.jpg' %}" alt=""></figure>
+				<figure><img src="{{user_profile.background.url}}" style="height: 500px;" alt=""></figure>
 				<form action="/follow" method='POST'>
 					{% csrf_token  %}
 					<span style="color: white; font-size: 27px; margin-left: 75%; padding: 12%; position: relative;
@@ -41,8 +41,8 @@
 					{% else %}
 					<span style="color: white; font-size: 27px;"><b>{{user_posts_length}} Posts</b></span>
 					{% endif %}
-					<span style="color: white; font-size: 27px;"><b>{{user_followers}} followers</b></span>
-					<span style="color: white; font-size: 27px;"><b>{{user_following}} following</b></span>
+					<span style="color: white; font-size: 27px;"><a href="/followers/{{user_profile.user.username}}"><b>{{user_followers}} followers</b></a></span>
+					<span style="color: white; font-size: 27px;"><a href="/following/{{user_profile.user.username}}"><b>{{user_following}} following</b></a></span>
 
 					<input type="hidden" value="{{user.username}}" name="follower" />
 					<input type="hidden" value="{{user_object.username}}" name="user" />
@@ -117,10 +117,14 @@
 		
 
 		<section>
-			<h5 style="color: black;white-space: nowrap; width: 110px; font-size: 27px; text-align:center; padding-left: 5%;"><b>@{{user_profile.user.username}}</b></h5>
-			<div class="bio">
+			<h5 style="color: black;white-space: nowrap; width: 110px; font-size: 27px; text-align:center; padding-left: 4%;"><b>{{user_profile.first_name}} {{user_profile.last_name}}</b></h5>
+			<div class="bio" style="margin-left: 4%;">
 				{{user_profile.bio}}
 			</div>
+			<div class="bio" style="margin-left: 4%;">
+				{{user_profile.location}}
+			</div>
+			
 		</section>
 		
 	<section>

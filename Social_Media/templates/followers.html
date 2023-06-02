@@ -8,7 +8,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="favicon.png" rel="icon" type="image/png">
-    <title>Search</title>
+    <title>Followers</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{% static 'assets/css/icons.css' %}">
@@ -23,7 +23,7 @@
             {% csrf_token %}
             <header style="margin-top: -23px;">
                 <div class="header_inner">
-                    <div class="left-side">
+                    {% comment %} <div class="left-side">
                         <!-- Logo -->
                         <div id="logo" class=" uk-hidden@s">
                             <a href="/">
@@ -49,7 +49,7 @@
                             </div> -->
                         <!-- </div> -->
 
-                    </div>
+                    </div> {% endcomment %}
                     <div class="right-side lg:pr-4">
                         <!-- welcome user -->
                         <a href="#" class="">
@@ -63,11 +63,11 @@
                              mr-1 opacity-90 text-xl uilus-circle"></ion-icon> New Post
                         </a>
                          <!-- upload dropdown box -->
-                         <div uk-dropdown="pos: top-right;mode:click ; animation: uk-animation-slide-bottom-small" class="header_dropdown">
+                        <div uk-dropdown="pos: top-right;mode:click ; animation: uk-animation-slide-bottom-small" class="header_dropdown">
     
                             <!-- notivication header -->
                             <div class="px-4 py-3 -mx-5 -mt-4 mb-5 border-b">
-                                <h4>New Post</h4>
+                                <h4>Upload Pics or Videos</h4>
                             </div>
     
                             <!-- notification contents -->
@@ -82,22 +82,16 @@
                                         </svg>
                                     </div>
 
-                                    <form action="upload" method="POST" enctype="multipart/form-data">
-                                        {% csrf_token %}
-                                        <p class="my-3 leading-6"> Upload a picture <br>
-                                        </p>
-                                        <div>
-                                            <input type="file" name="image_upload">
-                                        </div>
-                                        <label for="">Title</label>
-                                        <input type="text" name="caption" placeholder="Post Title..." class="shadow-none bg-gray-100">
-                                        <br>
-                                        <button class="button soft-warning-small" type="submit">Upload</button> 
-                                        </form>
-
-                                    <!-- <a href="#" class="uk-text-muted mt-3 uk-link"
+                                    <p class="my-3 leading-6"> Upload pics ..
+                                    </p>
+                                    <div uk-form-custom>
+                                        <input type="file">
+                                        <a href="#" class="button soft-warning small"> Choose pics</a>
+                                    </div>
+    
+                                    <a href="#" class="uk-text-muted mt-3 uk-link"
                                         uk-toggle="target: .choose-upload ;  animation: uk-animation-slide-right-small, uk-animation-slide-left-medium; queued: true">
-                                        Or Import Video </a> -->
+                                        <!--Or Import Video--> </a>
                                 </div>
     
                                 <div class="uk-flex uk-flex-column choose-upload" hidden>
@@ -119,6 +113,9 @@
                                         Or Upload Video </a>
                                 </div>
     
+                            </div>
+                            <div class="px-4 py-3 -mx-5 -mb-4 mt-5 border-t text-sm">
+                                Your File size Must be Maxmium 999MB
                             </div>
                         </div>
                         
@@ -305,7 +302,7 @@
                 <div class="container">
                 <div class="row ng-scope">
                     <div class="col-md-3 col-md-push-9">
-                        <h4>Results For <span class="fw-semi-bold"><b>{{username}}</b></span></h4>
+                        <h4><span class="fw-semi-bold"><b>{{user_following}}</b></span> Followers</h4>
                         <br>
                         <!-- <p class="text-muted fs-mini">Listed content is categorized by the following groups:</p> -->
                         <!-- <ul class="nav nav-pills nav-stacked search-result-categories mt">
@@ -324,16 +321,16 @@
                     <div class="col-md-9 col-md-pull-3">
                         <!-- <p class="search-results-count">About 94 700 000 (0.39 sec.) results</p> -->
                         
-                        {% for users in username_profile_list %}
+                        {% for follower in profile_followers %}
                         <section class="search-result-item">
-                            <a class="image-link" href="/profiles/{{users.user}}"><img class="image" src="{{users.porfile_img.url}}">
+                            <a class="image-link" href="/profiles/{{follower.user}}"><img class="image" src="{{follower.porfile_img.url}}">
                             </a>
                             <div class="search-result-item-body">
                                 <div class="row">
                                     <div class="col-sm-9">
-                                        <h4 class="search-result-item-heading"><a href="/profiles/{{users.user}}"><b>@{{users.user}}</b></a></h4>
-                                        <p class="info">{{users.location}}</p>
-                                        <p class="description">{{users.bio}}</p>
+                                        <h4 class="search-result-item-heading"><a href="/profiles/{{follower.user}}"><b>@{{follower.user}}</b></a></h4>
+                                        <p class="info">{{follower.location}}</p>
+                                        <p class="description">{{follower.bio}}</p>
                                     </div>
                                     <!-- <div class="col-sm-3 text-align-center">
                                         <p class="value3 mt-sm">$9, 700</p>

@@ -15,6 +15,7 @@ class Profile(models.Model):
     last_name = models.CharField(max_length=20, blank=True)
     bio = models.TextField(blank=True)
     porfile_img = models.ImageField(upload_to='profile_images', default='blank-profile-picture.jpg')
+    background = models.ImageField(upload_to='background_images', default='timeline-1.jpg')
     location = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
@@ -45,3 +46,9 @@ class FollowersCount(models.Model):
 
     def __str__(self):
         return self.user
+    
+class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.CharField(max_length=100)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
