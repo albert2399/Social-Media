@@ -269,6 +269,29 @@ def advanced(request):
     
     return render(request, 'advanced_settings.html', {'user_profile':user_profile})
 
+@login_required(login_url='signin')
+def privacy(request):
+    user_profile = Profile.objects.get(user=request.user)
+
+    # if request.method == 'POST':
+
+    #     if request.FILES.get('image') == None:
+    #         image = user_profile.background
+    #         user_profile.background = image
+
+    #         user_profile.save()
+    #     if request.FILES.get('image') != None:
+    #         image = request.FILES.get('image')
+
+    #         user_profile.background = image
+
+    #         user_profile.save()
+
+    #     return redirect('privacy')
+    
+    return render(request, 'privacy.html', {'user_profile':user_profile})
+
+
 def signup(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -336,3 +359,21 @@ def add_comment(request, post_id):
     
 
     return render(request, 'index (1).html')
+
+@login_required(login_url='signin')
+def like_list(request, post_id):
+    user_object = User.objects.get(username=request.user.username)
+    user_profile = Profile.objects.get(user=user_object)
+
+    like_lists = LikePost.objects.filter(post_id=post_id).values_list('username', flat=True)
+    user_liking = post_id
+
+    post_likes = []
+
+    for like in like_lists:
+        like_user = User.objects.get(username=like)
+        follower_profile = Profile.objects.get(user = like_user)
+        post_likes.append(follower_profile)
+    
+
+    return render(request, 'likes.html', {'post_likes':post_likes, 'user_profile': user_profile, 'user_liking':user_liking})
