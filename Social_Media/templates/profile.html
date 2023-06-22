@@ -37,18 +37,27 @@
 					{% if user_posts_length == 0 %}
 					<span style="color: white; font-size: 27px;"><b>No Posts Yet</b></span>
 					{% elif user_posts_length == 1 %}
-					<span style="color: white; font-size: 27px;"><b>{{user_posts_length}} Post</b></span>
+					<span style="color: white; font-size: 27px;"><a href="/posts/{{user_profile.user.username}}"><b>{{user_posts_length}} Post</b></a></span>
 					{% else %}
-					<span style="color: white; font-size: 27px;"><b>{{user_posts_length}} Posts</b></span>
+					<span style="color: white; font-size: 27px;"><a href="/posts/{{user_profile.user.username}}"><b>{{user_posts_length}} Posts</b></a></span>
 					{% endif %}
-					<span style="color: white; font-size: 27px;"><a href="/followers/{{user_profile.user.username}}"><b>{{user_followers}} followers</b></a></span>
-					<span style="color: white; font-size: 27px;"><a href="/following/{{user_profile.user.username}}"><b>{{user_following}} following</b></a></span>
 
+					{% if user_followers == 0 %}
+					<span style="color: white; font-size: 27px;"><b>{{user_followers}} followers</b></span>
+					{% else %}
+					<span style="color: white; font-size: 27px;"><a href="/followers/{{user_profile.user.username}}"><b>{{user_followers}} followers</b></a></span>
+					{% endif %}
+
+					{% if user_following == 0 %}
+					<span style="color: white; font-size: 27px;"><b>{{user_following}} following</b></span>
+					{% else %}
+					<span style="color: white; font-size: 27px;"><a href="/following/{{user_profile.user.username}}"><b>{{user_following}} following</b></a></span>
+					{% endif %}
 					<input type="hidden" value="{{user.username}}" name="follower" />
 					<input type="hidden" value="{{user_object.username}}" name="user" />
 
 					{% if user_object.username == user.username %}	
-					<a href="/settings">Account Settings</a>
+					<a href="/settings">{{button_text}}</a>
 					{% else %}
 					<a href="/follow"><button type="submit" style="background-color: #ffc0cb; border: #ffc0cb;">{{button_text}}</button></a>
 					{% endif %}
@@ -153,13 +162,37 @@
 							<div class="col-lg-6">
 								<div class="central-meta">
 									<ul class="photos">
-										
+										{% if user_profile.private == True %}
+
+										{% if isFollowing == True %}
+									
 										{% for post in user_posts %}
 										<li>
 											<a class="strip" href="{{post.image.url}}" title="" data-strip-group="mygroup" data-strip-group-options="loop: false">
 												<img src="{{post.image.url}}" style="height: 250px; width: 300px;" alt=""></a>
 										</li>
 										{% endfor %}
+
+										{% elif isFollowing == False %}
+										
+											<a class="strip" href="{% static 'assets/images/post/private.png' %}" title="" data-strip-group="mygroup" data-strip-group-options="loop: false" style="display: flex; justify-content: center; align-items: center;">
+												<img src="{% static 'assets/images/post/private.png' %}" style="height: 250px; width: 350px; margin-top: 48%;" alt="">
+											</a>
+										
+
+										{% endif %}
+
+										{% elif user_profile.private == False %}
+
+										{% for post in user_posts %}
+										<li>
+											<a class="strip" href="{{post.image.url}}" title="" data-strip-group="mygroup" data-strip-group-options="loop: false">
+												<img src="{{post.image.url}}" style="height: 250px; width: 300px;" alt=""></a>
+										</li>
+										{% endfor %}
+
+										{% endif %}
+
 										
 									</ul>
 									<!--<div class="lodmore"><button class="btn-view btn-load-more"></button></div>-->

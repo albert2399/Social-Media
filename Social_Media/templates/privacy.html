@@ -50,7 +50,7 @@
                                 </div>
                                 <div class="switches-list -mt-8 is-large">
                                 <div class="switch-container">
-                                        <label class="switch"><input type="checkbox"><span class="switch-button"></span> </label>
+                                        <label class="switch"><input type="checkbox" id="mySwitch" {% if user_profile.private %}checked{% endif %}><span class="switch-button"></span> </label>
                                     </div>
                                 </div>
                             </div>
@@ -114,6 +114,27 @@
     <script src="{% static 'assets/js/uikit.js' %}"></script>
     <script src="{% static 'assets/js/simplebar.js' %}"></script>
     <script src="{% static 'assets/js/custom.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        $('#mySwitch').change(function() {
+        var isChecked = $(this).is(':checked');
+        // Envía una solicitud AJAX al servidor Django
+        $.ajax({
+            url: 'private',
+            type: 'POST',
+            data: {
+            'switch_value': isChecked ? 'on' : 'off',
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+            // Realiza acciones adicionales si es necesario
+            }
+        });
+        });
+    });
+    </script>
+
 
 
     <script src="{% static '../../unpkg.com/ionicons%405.2.3/dist/ionicons.js' %}"></script>

@@ -17,6 +17,7 @@ class Profile(models.Model):
     porfile_img = models.ImageField(upload_to='profile_images', default='blank-profile-picture.jpg')
     background = models.ImageField(upload_to='background_images', default='timeline-1.jpg')
     location = models.CharField(max_length=100, blank=True)
+    private = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.username

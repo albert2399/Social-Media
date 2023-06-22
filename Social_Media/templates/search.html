@@ -81,23 +81,23 @@
                                             <path d="M9 13h2v5a1 1 0 11-2 0v-5z" />
                                         </svg>
                                     </div>
-
-                                    <form action="upload" method="POST" enctype="multipart/form-data">
-                                        {% csrf_token %}
-                                        <p class="my-3 leading-6"> Upload a picture <br>
-                                        </p>
-                                        <div>
-                                            <input type="file" name="image_upload">
-                                        </div>
-                                        <label for="">Title</label>
-                                        <input type="text" name="caption" placeholder="Post Title..." class="shadow-none bg-gray-100">
-                                        <br>
-                                        <button class="button soft-warning-small" type="submit">Upload</button> 
-                                        </form>
-
-                                    <!-- <a href="#" class="uk-text-muted mt-3 uk-link"
+                                    
+                                    <form action="../upload" method="POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <p class="my-3 leading-6"> Upload a picture <br>
+                                    </p>
+                                    <div>
+                                        <input type="file" name="image_upload">
+                                    </div>
+                                    <label for="">Title</label>
+                                    <input type="text" name="caption" placeholder="Post Title..." class="shadow-none bg-gray-100">
+                                    <br>
+                                    <button class="button soft-warning-small" type="submit">Upload</button> 
+                                    </form>
+    
+                                    {% comment %} <a href="#" class="uk-text-muted mt-3 uk-link"
                                         uk-toggle="target: .choose-upload ;  animation: uk-animation-slide-right-small, uk-animation-slide-left-medium; queued: true">
-                                        Or Import Video </a> -->
+                                        Or Import Video </a> {% endcomment %}
                                 </div>
     
                                 <div class="uk-flex uk-flex-column choose-upload" hidden>
@@ -155,7 +155,7 @@
                         <!-- <a href="#" class="header-links-item">
                             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="0.5em" height="0.5em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><g fill="currentColor"><path d="M2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/></g></svg>
                         </a> -->
-                        <div uk-drop="mode: click;offset: 4" class="header_dropdown">
+                        {% comment %} <div uk-drop="mode: click;offset: 4" class="header_dropdown">
                             <h4
                                 class="-mt-5 -mx-5 bg-gradient-to-t from-gray-100 to-gray-50 border-b font-bold px-6 py-3">
                                 Messages </h4>
@@ -175,7 +175,7 @@
 
                             </ul>
                             <a href="#" class="see-all">See all</a>
-                        </div>
+                        </div> {% endcomment %}
 
                         <!-- profile -->
 

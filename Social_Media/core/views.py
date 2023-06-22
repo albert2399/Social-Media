@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Profile, Post, LikePost, FollowersCount, Comment
 from itertools import chain
 import random
+from django.http import JsonResponse
 
 # Create your views here.
 
@@ -71,9 +72,9 @@ def upload(request):
         new_post = Post.objects.create(user=user, image=image, caption=caption, perfil=perfil)
         new_post.save()
 
-        return redirect('/')
+        return redirect(request.META['HTTP_REFERER'])
     else:
-        return redirect('/')
+        return redirect(request.META['HTTP_REFERER'])
 
 @login_required(login_url='signin')
 def delete(request, post_id):
@@ -81,9 +82,9 @@ def delete(request, post_id):
 
     if request.method == 'POST':
         post.delete()
-        return redirect('/')
+        return redirect(request.META['HTTP_REFERER'])
     
-    return redirect('/')
+    return redirect(request.META['HTTP_REFERER'])
 
 @login_required(login_url='signin')
 def search(request):
@@ -152,12 +153,14 @@ def like_post(request):
         new_like.save()
         post.likes = post.likes+1
         post.save()
-        return redirect('/')
+        return redirect(request.META['HTTP_REFERER'])
+    
     else:
         like_filter.delete()
         post.likes = post.likes-1
         post.save()
-        return redirect('/')
+        return redirect(request.META['HTTP_REFERER'])
+    
 
 @login_required(login_url='signin')
 def profile(request, pk):
@@ -168,15 +171,25 @@ def profile(request, pk):
 
     follower = request.user.username
     user = pk
+    isFollowing = True
 
     if FollowersCount.objects.filter(follower=follower, user=user).first():
         button_text = 'Unfollow'
+        isFollowing = True
+
+    elif follower == user:
+        button_text = 'Account Settings'
+        isFollowing = True
 
     else:
         button_text = 'Follow'
+        isFollowing = False
 
     user_followers = len(FollowersCount.objects.filter(user=pk))
     user_following = len(FollowersCount.objects.filter(follower=pk))
+
+
+
 
     context = {
         'user_object': user_object,
@@ -186,6 +199,7 @@ def profile(request, pk):
         'button_text':button_text,
         'user_followers':user_followers,
         'user_following':user_following,
+        'isFollowing':isFollowing,
     }
     return render(request, 'profile.html', context)
 
@@ -291,6 +305,18 @@ def privacy(request):
     
     return render(request, 'privacy.html', {'user_profile':user_profile})
 
+@login_required(login_url='signin')
+def posts(request, pk):
+    user_object = User.objects.get(username=request.user.username)
+    user_profile = Profile.objects.get(user=user_object)
+
+    user_post_list = Post.objects.filter(user=pk)
+
+    comments = Comment.objects.all()
+
+    
+
+    return render(request, 'index.html', {'user_post_list':user_post_list, 'user_profile':user_profile, 'comments':comments})
 
 def signup(request):
     if request.method == 'POST':
@@ -355,13 +381,28 @@ def add_comment(request, post_id):
         user = request.user.username
         comment = Comment.objects.create(content=comment_text, post_id=post_id, user=user)
         comment.save()
-        return redirect('/')
+        return redirect(request.META['HTTP_REFERER'])
     
 
     return render(request, 'index (1).html')
 
 @login_required(login_url='signin')
+def del_comment(request, comment_id):
+    user=request.user.username
+    id = request.POST.get('comentario.id')
+    comment = Comment.objects.get(id=comment_id, user=user)
+    
+    if request.method == 'POST':
+        if request.user.username == comment.user:
+            comment.delete()
+            return redirect(request.META['HTTP_REFERER'])
+
+    
+    return render(request, {'comment': comment})
+
+@login_required(login_url='signin')
 def like_list(request, post_id):
+
     user_object = User.objects.get(username=request.user.username)
     user_profile = Profile.objects.get(user=user_object)
 
@@ -377,3 +418,21 @@ def like_list(request, post_id):
     
 
     return render(request, 'likes.html', {'post_likes':post_likes, 'user_profile': user_profile, 'user_liking':user_liking})
+
+@login_required(login_url='signin')
+def private(request):
+
+    user_object = User.objects.get(username=request.user.username)
+    user_profile = Profile.objects.get(user=user_object)
+
+    if request.method == 'POST':
+
+        switch_value = request.POST.get('switch_value')
+        if switch_value == 'on':
+            user_profile.private = True
+
+        elif switch_value == 'off':
+            user_profile.private = False
+        user_profile.save()
+
+    return JsonResponse({'success': True})
